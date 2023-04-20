@@ -15,6 +15,8 @@ void GameScene::Initialize() {
 	sprite_ = Sprite::Create(textureHandle_, {100,50});
 	modeltextureHandle_ = TextureManager::Load("sample.png");
 	model_ = Model::Create();
+	worldTransform_.Initialize();
+	viewProjection_.Initialize();
 }
 
 void GameScene::Update() { 
