@@ -13,6 +13,8 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 	textureHandle_ = TextureManager::Load("sample.png");
 	sprite_ = Sprite::Create(textureHandle_, {100,50});
+	modeltextureHandle_ = TextureManager::Load("sample.png");
+	model_ = Model::Create();
 }
 
 void GameScene::Update() { 
