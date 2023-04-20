@@ -39,6 +39,7 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
+	
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -49,7 +50,10 @@ private: // メンバ変数
 	//3Dモデル
 	Model* model_ = nullptr;
 	uint32_t modeltextureHandle_ = 0;
-
+	//ワールドトランスフォーム
+	WorldTransform worldTransform_;
+	//ビュープロジェクション
+	ViewProjection viewProjection_;
 
 	/// <summary>
 	/// ゲームシーン用
