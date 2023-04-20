@@ -46,6 +46,10 @@ private: // メンバ変数
 	Audio* audio_ = nullptr;
 	Sprite* sprite_ = nullptr;
 	uint32_t textureHandle_ = 0;
+	//3Dモデル
+	Model* model_ = nullptr;
+	uint32_t modeltextureHandle_ = 0;
+
 
 	/// <summary>
 	/// ゲームシーン用
