@@ -17,6 +17,12 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 	worldTransform_.Initialize();
 	viewProjection_.Initialize();
+	//サウンドデータの読み込み
+	soundDateHandle_ = audio_->LoadWave("fanfare.wav");
+	//音声再生
+	audio_->PlayWave(soundDateHandle_);
+	//音声再生
+	voiceHandle_ = audio_->PlayWave(soundDateHandle_,true);
 }
 
 void GameScene::Update() { 
@@ -27,6 +33,11 @@ void GameScene::Update() {
 	position.y += 1.0f;
 	//移動した座標をスプライトに反映	
 	sprite_->SetPosition(position);
+	//スペースキーを押した瞬間
+	if (input_->TriggerKey(DIK_SPACE)) {
+		//音声停止
+		audio_->StopWave(voiceHandle_);
+	}
 }
 
 void GameScene::Draw() {
@@ -56,6 +67,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	/// 3Dモデル描画
+	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
