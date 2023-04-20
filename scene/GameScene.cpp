@@ -17,6 +17,10 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 	worldTransform_.Initialize();
 	viewProjection_.Initialize();
+	//サウンドデータの読み込み
+	soundDateHandle_ = audio_->LoadWave("fanfare.wav");
+	//音声再生
+	audio_->PlayWave(soundDateHandle_);
 }
 
 void GameScene::Update() { 
