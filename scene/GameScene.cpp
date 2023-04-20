@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include"ImGuiManager.h"
 
 GameScene::GameScene() {}
 
@@ -38,6 +39,8 @@ void GameScene::Update() {
 		//音声停止
 		audio_->StopWave(voiceHandle_);
 	}
+	//デバックテキストの表示
+	ImGui::Text("Kamata Tarou %d.%d.%d", 2050, 12, 31);
 }
 
 void GameScene::Draw() {
