@@ -34,6 +34,7 @@ public: // メンバ関数
 	/// 毎フレーム処理
 	/// </summary>
 	void Update();
+	void PlayerUpdate();
 
 	/// <summary>
 	/// 描画
@@ -60,6 +61,16 @@ private: // メンバ変数
 	uint32_t voiceHandle_ = 0;
 	//ImGuiで値を入力する変数
 	float inputFloat3[3] = {0, 0, 0};
+	//BG(スプライト)
+	uint32_t textureHandleBG_ = 0;
+	Sprite* spriteBG_ = nullptr;
+	//ビュープロジェクション
+	uint32_t textureHandleStage_ = 0;
+	Model* modelStage_ = nullptr;
+	WorldTransform worldTransformStage_;
+	uint32_t textureHandlePlayer_ = 0;
+	Model* modelPlayer_ = nullptr;
+	WorldTransform worldTransformPlayer_;
 
 	/// <summary>
 	/// ゲームシーン用

@@ -2,52 +2,61 @@
 #include "TextureManager.h"
 #include <cassert>
 #include"ImGuiManager.h"
+#include"MathUtilityForText.h"
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {}
+GameScene::~GameScene() { 
+	delete spriteBG_; 
+	delete modelStage_;
+	delete modelPlayer_;
+}
 
 void GameScene::Initialize() {
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
-	textureHandle_ = TextureManager::Load("sample.png");
-	sprite_ = Sprite::Create(textureHandle_, {100,50});
-	modeltextureHandle_ = TextureManager::Load("sample.png");
-	model_ = Model::Create();
 	worldTransform_.Initialize();
+	textureHandleBG_ = TextureManager::Load("bg.jpg");
+	spriteBG_ = Sprite::Create(textureHandleBG_, {0, 0});
 	viewProjection_.Initialize();
-	//サウンドデータの読み込み
-	soundDateHandle_ = audio_->LoadWave("fanfare.wav");
-	//音声再生
-	audio_->PlayWave(soundDateHandle_);
-	//音声再生
-	voiceHandle_ = audio_->PlayWave(soundDateHandle_,true);
+	//ステージ
+	textureHandleStage_ = TextureManager::Load("stage.jpg");
+	modelStage_ = Model::Create();
+	worldTransformStage_.Initialize();
+	viewProjection_.translation_.y = 1;
+	viewProjection_.translation_.z = -6;
+	viewProjection_.Initialize();
+	worldTransformStage_.translation_ = {0, -1.5, 0};
+	worldTransformStage_.scale_ = {4.5f, 1, 40};
+	worldTransformStage_.matWorld_ = MakeAffineMatrix(
+	    worldTransformStage_.scale_,
+		worldTransformStage_.rotation_,
+	    worldTransformStage_.translation_
+	);
+	worldTransformStage_.TransferMatrix();
+	textureHandlePlayer_ = TextureManager::Load("player.png");
+	modelPlayer_ = Model::Create();
+	worldTransformPlayer_.scale_ = {0.5f, 0.5f, 0.5f};
+	worldTransformPlayer_.Initialize();
+
 }
 
 void GameScene::Update() { 
-	//スプライトの今の座標を取得
-	Vector2 position = sprite_->GetPosition();
-	//座標を｛2，1｝移動
-	position.x += 2.0f;
-	position.y += 1.0f;
-	//移動した座標をスプライトに反映	
-	sprite_->SetPosition(position);
-	//スペースキーを押した瞬間
-	if (input_->TriggerKey(DIK_SPACE)) {
-		//音声停止
-		audio_->StopWave(voiceHandle_);
+	PlayerUpdate();
+}
+void GameScene::PlayerUpdate() {
+	worldTransformPlayer_.matWorld_ = MakeAffineMatrix(
+	    worldTransformPlayer_.scale_, worldTransformPlayer_.rotation_,
+	    worldTransformPlayer_.translation_);
+	worldTransformPlayer_.TransferMatrix();
+	if (input_->PushKey(DIK_LEFT)) {
+		worldTransformPlayer_.translation_.x -= 0.1f;
 	}
-	//デバックテキストの表示
-	ImGui::Begin("Debug1");
-	ImGui::Text("Kamata Tarou %d.%d.%d", 2050, 12, 31);
-	//float3入力ボックス
-	ImGui::InputFloat3("InputFloat3",inputFloat3);
-	//float3スライダー
-	ImGui::SliderFloat3("SliderFloat3", inputFloat3, 0.0f, 1.0f);
-	ImGui::End();
-
+	if (input_->PushKey(DIK_RIGHT)) {
+		worldTransformPlayer_.translation_.x += 0.1f;
+	}
 }
 
 void GameScene::Draw() {
@@ -62,7 +71,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-	sprite_->Draw();
+	spriteBG_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -78,8 +87,8 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	/// 3Dモデル描画
-	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
-
+	modelStage_->Draw(worldTransformStage_, viewProjection_, textureHandleStage_);
+	modelPlayer_->Draw(worldTransformPlayer_, viewProjection_, textureHandlePlayer_);
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
