@@ -35,6 +35,10 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 	void PlayerUpdate();
+	void BeamUpdate();
+	void BeamMove();
+	void BeamBorn();
+
 
 	/// <summary>
 	/// 描画
@@ -71,6 +75,11 @@ private: // メンバ変数
 	uint32_t textureHandlePlayer_ = 0;
 	Model* modelPlayer_ = nullptr;
 	WorldTransform worldTransformPlayer_;
+	//ビーム
+	uint32_t textureHandleBeam_ = 0;
+	Model* modelBeam_ = nullptr;
+	WorldTransform worldTransformBeam_;
+	int beamFlag_ = 0;
 
 	/// <summary>
 	/// ゲームシーン用
