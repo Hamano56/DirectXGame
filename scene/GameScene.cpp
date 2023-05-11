@@ -3,6 +3,7 @@
 #include <cassert>
 #include"ImGuiManager.h"
 #include"MathUtilityForText.h"
+#include"time.h"
 
 GameScene::GameScene() {}
 
@@ -11,6 +12,7 @@ GameScene::~GameScene() {
 	delete modelStage_;
 	delete modelPlayer_;
 	delete modelBeam_;
+	delete modelEnemy_;
 }
 
 void GameScene::Initialize() {
@@ -45,11 +47,18 @@ void GameScene::Initialize() {
 	modelBeam_ = Model::Create();
 	worldTransformBeam_.scale_ = {0.3f,0.3f,0.3f};
 	worldTransformBeam_.Initialize();
+	textureHandleEnemy_ = TextureManager::Load("enemy.png");
+	modelEnemy_ = Model::Create();
+	worldTransformEnemy_.scale_ = {0.5f, 0.5f, 0.5f};
+	worldTransformEnemy_.Initialize();
+	srand((unsigned int)time(NULL));
+
 }
 
 void GameScene::Update() { 
 	PlayerUpdate();
 	BeamUpdate();
+	EnemyUpdate();
 }
 void GameScene::PlayerUpdate() {
 	worldTransformPlayer_.matWorld_ = MakeAffineMatrix(
@@ -61,6 +70,12 @@ void GameScene::PlayerUpdate() {
 	}
 	if (input_->PushKey(DIK_RIGHT)) {
 		worldTransformPlayer_.translation_.x += 0.1f;
+	}
+	if (worldTransformPlayer_.translation_.x <= -4.0f) {
+		worldTransformPlayer_.translation_.x = -4.0f;
+	}
+	if (worldTransformPlayer_.translation_.x >= 4.0f) {
+		worldTransformPlayer_.translation_.x = 4.0f;
 	}
 }
 void GameScene::BeamUpdate() {
@@ -80,6 +95,7 @@ void GameScene::BeamMove() {
 	}
 	if (worldTransformBeam_.translation_.z >= 40.0f) {
 		beamFlag_ = 0;
+	
 	}
 
 }
@@ -91,6 +107,39 @@ void GameScene::BeamBorn() {
 	worldTransformBeam_.translation_.z = worldTransformPlayer_.translation_.z + 1.0f;
 	}
 }
+
+void GameScene::EnemyUpdate() {
+	EnemyBorn();
+	if (aliveFlag_ == 1) {
+	EnemyMove();
+	}
+	worldTransformEnemy_.matWorld_ = MakeAffineMatrix(
+	    worldTransformEnemy_.scale_, worldTransformEnemy_.rotation_,
+	    worldTransformEnemy_.translation_);
+	worldTransformEnemy_.TransferMatrix();
+	}
+
+void GameScene::EnemyMove() { 
+	if (aliveFlag_ == 1) {
+	worldTransformEnemy_.translation_.z -= 0.2f;
+	worldTransformEnemy_.rotation_.x -= 0.1f;
+	}
+	if (worldTransformEnemy_.translation_.z <= -2.0f) {
+	worldTransformEnemy_.translation_.z = 40.0f;
+	aliveFlag_ = 0;
+	}
+}
+void GameScene::EnemyBorn() {
+	int x = rand() % 80;
+	float x2 = (float)x / 10 - 4;
+	if (aliveFlag_ == 0) {
+		worldTransformEnemy_.translation_.x = x2;
+		worldTransformEnemy_.translation_.z = 40.0f;
+		aliveFlag_ = 1;
+		}
+	}
+	
+	
 
 void GameScene::Draw() {
 
@@ -125,7 +174,9 @@ void GameScene::Draw() {
 	if (beamFlag_ == 1) {
 	modelBeam_->Draw(worldTransformBeam_, viewProjection_, textureHandleBeam_);
 	}
-	
+	if (aliveFlag_ == 1) {
+	modelEnemy_->Draw(worldTransformEnemy_, viewProjection_, textureHandleEnemy_);
+	}
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
