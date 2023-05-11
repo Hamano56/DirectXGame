@@ -8,6 +8,7 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include"DebugText.h"
 
 /// <summary>
 /// ゲームシーン
@@ -41,6 +42,9 @@ public: // メンバ関数
 	void EnemyUpdate();
 	void EnemyBorn();
 	void EnemyMove();
+	void Collision();
+	void CollisionPlayerEnemy();
+	void CollisionBeamEnemy();
 
 
 	/// <summary>
@@ -88,6 +92,9 @@ private: // メンバ変数
 	Model* modelEnemy_ = nullptr;
 	WorldTransform worldTransformEnemy_;
 	int aliveFlag_ = 0;
+	DebugText* debugText_ = nullptr;
+	int gameScore_ = 0;
+	int PlayerLife_ = 3;
 
 	/// <summary>
 	/// ゲームシーン用

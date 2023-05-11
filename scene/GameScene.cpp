@@ -4,6 +4,7 @@
 #include"ImGuiManager.h"
 #include"MathUtilityForText.h"
 #include"time.h"
+#include"DebugText.h"
 
 GameScene::GameScene() {}
 
@@ -52,6 +53,9 @@ void GameScene::Initialize() {
 	worldTransformEnemy_.scale_ = {0.5f, 0.5f, 0.5f};
 	worldTransformEnemy_.Initialize();
 	srand((unsigned int)time(NULL));
+	debugText_ = DebugText::GetInstance();
+	debugText_->Initialize();
+	
 
 }
 
@@ -59,6 +63,7 @@ void GameScene::Update() {
 	PlayerUpdate();
 	BeamUpdate();
 	EnemyUpdate();
+	Collision();
 }
 void GameScene::PlayerUpdate() {
 	worldTransformPlayer_.matWorld_ = MakeAffineMatrix(
@@ -138,7 +143,31 @@ void GameScene::EnemyBorn() {
 		aliveFlag_ = 1;
 		}
 	}
-	
+void GameScene::Collision() { 
+	CollisionPlayerEnemy();
+	CollisionBeamEnemy();
+}
+void GameScene::CollisionPlayerEnemy() {
+	if (aliveFlag_ == 1) {
+		float dx = abs(worldTransformPlayer_.translation_.x - worldTransformEnemy_.translation_.x);
+		float dz = abs(worldTransformPlayer_.translation_.z - worldTransformEnemy_.translation_.z);
+		if (dx < 1 && dz < 1) {
+			aliveFlag_ = 0;
+			PlayerLife_ -= 1;
+		}
+	}
+}
+void GameScene::CollisionBeamEnemy() {
+	if (aliveFlag_ == 1) {
+		float dx = abs(worldTransformBeam_.translation_.x - worldTransformEnemy_.translation_.x);
+		float dz = abs(worldTransformBeam_.translation_.z - worldTransformEnemy_.translation_.z);
+		if (dx < 1 && dz < 1) {
+			aliveFlag_ = 0;
+			beamFlag_ = 0;
+			gameScore_ += 1;
+		}
+	}
+}
 	
 
 void GameScene::Draw() {
@@ -188,7 +217,13 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
-
+	debugText_->Print("AAA", 10, 10, 2);
+	debugText_->DrawAll();
+	char str[100];
+	sprintf_s(str, "SCORE %d", gameScore_);
+	debugText_->Print(str, 200, 10, 2);
+	sprintf_s(str, "LIFE %d", PlayerLife_);
+	debugText_->Print(str, 800, 10, 2);
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
